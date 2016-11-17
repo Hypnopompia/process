@@ -1,0 +1,14 @@
+{
+    "name": "hypnopompia/process",
+    "description": "Execute background tasks using proc_open and friends.",
+    "authors": [
+        {
+            "name": "TJ Hunter",
+            "email": "tjhunter@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": { "Hypnopompia\\": "" },
+    }
+}
