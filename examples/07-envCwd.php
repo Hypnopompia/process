@@ -11,6 +11,8 @@ $process = Process::factory("./envcwd.sh", [
 	],
 ]);
 
+$process->addEnv('BAR', 'BAZ'); // Add another environment variable
+
 $process->start()->join()->stop(); // Start the process and wait for it to end, then cleanup
 extract($process->getOutput());
 

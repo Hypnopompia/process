@@ -54,6 +54,34 @@ class Process {
 			$obj->setEnv($options['env']);
 		}
 
+		if (isset($options['useSTDIN'])) {
+			$obj->useSTDIN($options['useSTDIN']);
+		}
+
+		if (isset($options['useSTDOUT'])) {
+			$obj->useSTDOUT($options['useSTDOUT']);
+		}
+
+		if (isset($options['useSTDERR'])) {
+			$obj->useSTDERR($options['useSTDERR']);
+		}
+
+		if (isset($options['storeSTDOUT'])) {
+			$obj->useSTDERR($options['storeSTDOUT']);
+		}
+
+		if (isset($options['storeSTDERR'])) {
+			$obj->useSTDERR($options['storeSTDERR']);
+		}
+
+		if (isset($options['timeout'])) {
+			$obj->setTimeout($options['timeout']);
+		}
+
+		if (isset($options['sleeptime'])) {
+			$obj->setSleeptime($options['sleeptime']);
+		}
+
 		return $obj;
 	}
 
@@ -376,6 +404,12 @@ class Process {
 
 	public function setEnv($env) {
 		$this->env = $env;
+
+		return $this;
+	}
+
+	public function addEnv($key, $val) {
+		$this->env[$key] = $val;
 
 		return $this;
 	}
