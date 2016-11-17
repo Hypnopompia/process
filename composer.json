@@ -1,14 +1,21 @@
 {
-    "name": "hypnopompia/process",
-    "description": "Execute background tasks using proc_open and friends.",
-    "authors": [
-        {
-            "name": "TJ Hunter",
-            "email": "tjhunter@gmail.com"
-        }
-    ],
-    "require": {},
-    "autoload": {
-        "psr-4": { "Hypnopompia\\": "" }
+  "name": "hypnopompia/process",
+  "description": "Process is a PHP library to help with the task of running other applications asynchronously from PHP in a pseudo-threaded way.",
+  "type" : "library",
+  "keywords": ["php", "exec", "system", "proc_open", "stdin", "stdout", "stderr"],
+  "authors": [
+    {
+      "name": "TJ Hunter",
+      "email": "tjhunter@gmail.com"
     }
+  ],
+  "license": [
+    "MIT"
+  ],
+  "require": {},
+  "autoload": {
+    "psr-4": {
+      "Hypnopompia\\": ""
+    }
+  }
 }
