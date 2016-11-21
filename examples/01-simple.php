@@ -22,4 +22,5 @@ while ($process->running()) {
 }
 
 $process->stop();
+echo "Run Time: " . $process->getRunTime() . " seconds\n";
 echo "Exit code: " . $process->getExitcode() . "\n";

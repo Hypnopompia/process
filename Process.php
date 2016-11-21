@@ -3,13 +3,19 @@ namespace Hypnopompia;
 
 use Exception;
 
+class ProcessAlreadyStartedException extends Exception {};
+class ProcessStartFailedException extends Exception {};
+class ProcessStdInNotFoundException extends Exception {};
+class ProcessStreamErrorException extends Exception {};
+
 class Process {
 	const STDIN = 0;
 	const STDOUT = 1;
 	const STDERR = 2;
 
-	const START_FAILED = "START_FAILED";
-	const STDIN_NOT_FOUND = "STDIN_NOT_FOUND";
+	const NOT_STARTED = 0;
+	const RUNNING = 1;
+	const FINISHED = 2;
 
 	private $command;
 
@@ -25,7 +31,8 @@ class Process {
 	private $killed = false;
 
 	private $descriptors;
-	private $startTime;
+	private $startTime = null;
+	private $endTime = null;
 	private $process; // proc_open resource
 	private $pipes; // file pointers to stdin, stdout, stderr
 	private $sleeptime = 100; // ms to sleep while waiting for processes
@@ -35,6 +42,7 @@ class Process {
 	private $stdout = ""; // container for process output (stdout)
 	private $stderr = ""; // container for process output (stderr)
 
+	private $state = self::NOT_STARTED;
 	private $pid = null;
 	private $running = null;
 	private $exitcode = null;
@@ -104,12 +112,16 @@ class Process {
 	}
 
 	public function start() {
+		if (!$this->state === self::NOT_STARTED) {
+			throw new ProcessAlreadyStartedException("Process was already started.");
+		}
+
 		$this->updateDescriptors();
 
-		$this->process = proc_open($this->command, $this->descriptors, $this->pipes, $this->cwd, $this->env);
+		$this->process = @proc_open($this->command, $this->descriptors, $this->pipes, $this->cwd, $this->env);
 
 		if (!($this->process) || !is_resource($this->process)) {
-			throw new Exception("Unable to execute command: $this->command\n", self::START_FAILED);
+			throw new ProcessStartFailedException("Unable to execute command: $this->command\n");
 		}
 
 		// Set the pipes as non-blocking
@@ -119,6 +131,7 @@ class Process {
 			}
 		}
 
+		$this->state = self::RUNNING;
 		$this->startTime = microtime(true);
 		$this->updateStatus();
 
@@ -163,7 +176,7 @@ class Process {
 		$changed = stream_select($readStreams, $write, $expect, 0, 200000);
 
 		if (false === $changed) {
-			throw new Exception('stream error');
+			throw new ProcessStreamErrorException('stream error');
 		}
 
 		if (0 === $changed) {
@@ -238,7 +251,7 @@ class Process {
 
 			return $this;
 		}
-		throw new Exception('STDIN is not available', self::STDIN_NOT_FOUND);
+		throw new ProcessStdInNotFoundException('STDIN is not available');
 	}
 
 	public function endSend() {
@@ -337,6 +350,18 @@ class Process {
 		return $this->startTime;
 	}
 
+	public function getEndTime() {
+		return $this->endTime;
+	}
+
+	public function getRunTime() {
+		if ($this->startTime && $this->endTime) {
+			return ($this->endTime - $this->startTime);
+		}
+
+		return false;
+	}
+
 	public function getStdout() {
 		return $this->stdout;
 	}
@@ -361,6 +386,11 @@ class Process {
 
 	protected function setRunning($running) {
 		$this->running = $running;
+
+		if (!$running && $this->state == self::RUNNING) {
+			$this->state = self::FINISHED;
+			$this->endTime = microtime(true);
+		}
 
 		return $this;
 	}

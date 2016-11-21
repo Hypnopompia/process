@@ -3,8 +3,9 @@
 require_once "../Process.php";
 
 use Hypnopompia\Process;
+use Hypnopompia\ProcessStartFailedException;
 
-$processCount = 1000;
+$processCount = 5000;
 $processes = [];
 
 for ($i = 0; $i < $processCount; $i++) {
@@ -12,8 +13,14 @@ for ($i = 0; $i < $processCount; $i++) {
 	$process->useSTDERR(false);
 	$process->storeSTDOUT(false);
 	$process->storeSTDERR(false);
-	$process->start();
-	echo "Started " . $process->getPid() . "\n";
+	try {
+		$process->start();
+	} catch (ProcessStartFailedException $e) {
+		echo "Couldn't start process. Probably too many open pipes.\n";
+		break;
+	}
+
+	echo "Started $i - " . $process->getPid() . "\n";
 
 	$processes[$process->getPid()] = $process;
 }
@@ -35,7 +42,7 @@ while ($running) {
 		if ($process->running()) {
 			$running = true;
 		} else {
-			echo "[" . $pid . "] finished with exit code " . $process->getExitcode() . ".\n";
+			echo "[" . $pid . "] finished with exit code " . $process->getExitcode() . " in " . number_format($process->getRunTime(), 3) . " seconds.\n";
 
 			$process->stop();
 			unset($processes[$pid]);

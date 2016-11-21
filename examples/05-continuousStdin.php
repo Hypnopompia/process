@@ -27,4 +27,5 @@ while ($process->running() && $i++ <= 10) {
 }
 
 $process->stop();
+echo "Run Time: " . $process->getRunTime() . " seconds\n";
 echo "Exit code: " . $process->getExitcode() . "\n";

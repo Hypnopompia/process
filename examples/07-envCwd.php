@@ -17,4 +17,5 @@ $process->start()->join()->stop(); // Start the process and wait for it to end, 
 extract($process->getOutput());
 
 echo trim($stdout) . "\n";
+echo "Run Time: " . $process->getRunTime() . " seconds\n";
 echo "Exit code: " . $process->getExitcode() . "\n";
