@@ -10,7 +10,7 @@ $processesRan = 0;
 $processes = [];
 
 while ($processesRan < $totalProcesses) {
-	// Start new processes until we have $totalProcesses running
+	// Start new processes until we have $concurrentProcesses running
 	while (count($processes) < $concurrentProcesses && $processesRan < $totalProcesses) {
 		$process = Process::factory("curl -s http://localhost/?t=" . $processesRan);
 		$process->useSTDERR(false);
