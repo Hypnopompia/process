@@ -112,7 +112,7 @@ class Process {
 	}
 
 	public function start() {
-		if (!$this->state === self::NOT_STARTED) {
+		if ($this->state !== self::NOT_STARTED) {
 			throw new ProcessAlreadyStartedException("Process was already started.");
 		}
 

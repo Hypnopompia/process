@@ -8,6 +8,7 @@ $process = Process::factory("./scripts/simple.sh");
 $process->storeSTDOUT(false);
 $process->storeSTDERR(false);
 $process->start();
+$process->start();
 
 while ($process->running()) {
 	extract($process->update());
